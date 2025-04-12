@@ -1,17 +1,12 @@
-export async function GET(req: Request) {
-  const url = new URL(req.url);
-  const code = url.searchParams.get("code");
+import { NextRequest, NextResponse } from 'next/server'
 
-  return new Response(`
-    <html>
-      <head><title>PlayRifa OAuth</title></head>
-      <body style="font-family: sans-serif; text-align: center; padding-top: 40px;">
-        <h1>Redirecionamento recebido com sucesso!</h1>
-        <p>Código: <strong>${code ?? "Não encontrado"}</strong></p>
-        <p>Agora você pode voltar para o aplicativo.</p>
-      </body>
-    </html>
-  `, {
-    headers: { "Content-Type": "text/html" }
-  });
+export async function GET(req: NextRequest) {
+  const { searchParams } = new URL(req.url)
+  const code = searchParams.get('code')
+
+  if (!code) {
+    return NextResponse.json({ error: 'Código não encontrado na URL' }, { status: 400 })
+  }
+
+  return NextResponse.redirect(`playrifa://oauth?code=${code}`)
 }
